@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+/*
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const Tour = require('../models/tourModel.cjs');
 const Booking = require('../models/bookingModel.cjs');
@@ -69,3 +69,10 @@ exports.getBooking = factory.getOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
 exports.updateBooking = factory.updateOne(Booking);
 exports.deleteBooking = factory.deleteOne(Booking);
+*/
+
+exports.createBooking = () => {};
+exports.getBooking = () => {};
+exports.getAllBookings = () => {};
+exports.updateBooking = () => {};
+exports.deleteBooking = () => {};

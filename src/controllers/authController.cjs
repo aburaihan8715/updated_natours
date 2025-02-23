@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-
+/*
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
@@ -280,4 +278,97 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   // 4) Log user in, send JWT
   createSendToken(user, 200, res);
+});
+
+*/
+
+const AppError = require('../errors/appError.cjs');
+const User = require('../models/userModel.cjs');
+const catchAsync = require('../utils/catchAsync.cjs');
+
+const { status: httpStatus } = require('http-status');
+const sendResponse = require('../utils/sendResponse.cjs');
+const jwtUtils = require('../utils/jwtUtils.cjs');
+const config = require('../config/index.cjs');
+
+exports.signup = catchAsync(async (req, res, next) => {
+  const newUser = await User.create(req.body);
+
+  if (!newUser) {
+    next(
+      new AppError(httpStatus.BAD_REQUEST, 'Failed to create a new user!'),
+    );
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    message: 'Signed up successfully!!',
+    data: newUser,
+  });
+});
+
+exports.login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return next(
+      new AppError(
+        httpStatus.BAD_REQUEST,
+        'Please provide email and password',
+      ),
+    );
+  }
+
+  const user = await User.getUserByEmail(email);
+
+  if (!user) {
+    return next(
+      new AppError(
+        httpStatus.BAD_REQUEST,
+        'User not found with this email!',
+      ),
+    );
+  }
+
+  const isPasswordCorrect = User.isPasswordCorrect(
+    password,
+    user?.password,
+  );
+
+  if (!isPasswordCorrect) {
+    return next(
+      new AppError(httpStatus.BAD_REQUEST, 'Invalid credentials!!'),
+    );
+  }
+
+  const jwtPayload = {
+    _id: user._id,
+    role: user.role,
+    email: user.email,
+  };
+
+  const accessToken = jwtUtils.createToken(
+    jwtPayload,
+    config.JWT_ACCESS_SECRET,
+    config.JWT_ACCESS_EXPIRES_IN,
+  );
+
+  const refreshToken = jwtUtils.createToken(
+    jwtPayload,
+    config.JWT_REFRESH_SECRET,
+    config.JWT_REFRESH_EXPIRES_IN,
+  );
+
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true,
+    sameSite: true,
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+  });
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Logged in successfully!!',
+    data: { accessToken, user },
+  });
 });

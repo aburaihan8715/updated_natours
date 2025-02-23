@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 const mongoose = require('mongoose');
+const config = require('./config/index.cjs');
 
 // UNCAUGHT EXCEPTION
 process.on('uncaughtException', (err) => {
@@ -8,7 +9,6 @@ process.on('uncaughtException', (err) => {
   process.exit(1);
 });
 
-const config = require('./config/index.cjs');
 const app = require('./app.cjs');
 
 mongoose

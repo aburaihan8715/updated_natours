@@ -1,3 +1,4 @@
+/*
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
@@ -126,4 +127,107 @@ userSchema.methods.createPasswordResetToken = function () {
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
+module.exports = User;
+
+*/
+
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Please tell us your name'],
+  },
+
+  email: {
+    type: String,
+    required: [true, 'Please provide your email'],
+    unique: true,
+    lowercase: true,
+    validate: {
+      validator: (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+      message: 'Please provide valid email address!',
+    },
+  },
+
+  password: {
+    type: String,
+    required: [true, 'Please provide a password'],
+    minLength: 8,
+    select: false,
+  },
+
+  passwordConfirm: {
+    type: String,
+    required: [true, 'Please confirm your password'],
+    validate: {
+      // This only works on CREATE and SAVE!!!
+      validator: function (value) {
+        return value === this.password;
+      },
+      message: 'Password are not the same!',
+    },
+  },
+
+  photo: {
+    type: String,
+    default: '',
+  },
+
+  role: {
+    type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
+  },
+
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
+
+  // passwordChangedAt: Date,
+  // passwordResetToken: String,
+  // passwordResetExpires: Date,
+});
+
+// Document middlewares
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  this.password = await bcrypt.hash(this.password, 8);
+
+  this.passwordConfirm = undefined;
+
+  next();
+});
+
+userSchema.post('save', function (doc, next) {
+  doc.password = undefined;
+  next();
+});
+
+// Statics method
+userSchema.statics.getUserByEmail = async (email) => {
+  return await User.findOne({ email }).select('+password');
+};
+
+userSchema.statics.isPasswordCorrect = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+userSchema.statics.isPasswordChangedAfterJwtIssued = function (
+  passwordChangedTimestamp,
+  jwtIssuedTimestamp,
+) {
+  const passwordChangedTime =
+    new Date(passwordChangedTimestamp).getTime() / 1000;
+  return passwordChangedTime > jwtIssuedTimestamp;
+};
+
+const User = mongoose.models.User || mongoose.model('User', userSchema);
 module.exports = User;

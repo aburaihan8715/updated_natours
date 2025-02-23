@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 
 const tourController = require('../controllers/tourController.cjs');
@@ -58,3 +59,26 @@ router
   );
 
 module.exports = router;
+*/
+
+const express = require('express');
+const tourController = require('../controllers/tourController.cjs');
+
+const tourRouter = express.Router();
+
+tourRouter.get(
+  '/top-six-tours',
+  tourController.getAliasTours,
+  tourController.getAllTours,
+);
+
+tourRouter.get('/tour-stats', tourController.tourStats);
+tourRouter.get('/monthly-plan/:year', tourController.monthlyPlan);
+
+tourRouter.get('/', tourController.getAllTours);
+tourRouter.post('/', tourController.createTour);
+tourRouter.get('/:id', tourController.getTour);
+tourRouter.patch('/:id', tourController.updateTour);
+tourRouter.delete('/:id', tourController.deleteTour);
+
+module.exports = tourRouter;

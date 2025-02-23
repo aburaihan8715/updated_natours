@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const bookingController = require('../controllers/bookingController.cjs');
 const authController = require('../controllers/authController.cjs');
@@ -27,3 +28,10 @@ router
   .delete(bookingController.deleteBooking);
 
 module.exports = router;
+*/
+
+const express = require('express');
+
+const bookingRouter = express.Router();
+
+module.exports = bookingRouter;

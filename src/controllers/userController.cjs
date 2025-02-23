@@ -1,3 +1,4 @@
+/*
 const multer = require('multer');
 const sharp = require('sharp');
 
@@ -120,3 +121,46 @@ exports.getAllUsers = factory.getAll(User);
 // Do NOT update passwords with this!
 exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
+*/
+
+const { status: httpStatus } = require('http-status');
+
+exports.getAllUsers = async (req, res) => {
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: 'Data fetched successfully!!',
+    data: null,
+  });
+};
+
+exports.getUser = async (req, res) => {
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: 'Data fetched successfully!!',
+    data: null,
+  });
+};
+
+exports.updateUser = async (req, res) => {
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: 'Data updated successfully!!',
+    data: null,
+  });
+};
+
+exports.deleteUser = async (req, res) => {
+  res.status(httpStatus.OK).json({
+    status: 'success',
+    message: 'Data deleted successfully!!',
+    data: null,
+  });
+};
+
+exports.createUser = async (req, res) => {
+  res.status(httpStatus.CREATED).json({
+    status: 'success',
+    message: 'Data created successfully!!',
+    data: null,
+  });
+};

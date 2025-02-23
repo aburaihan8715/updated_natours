@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 const userController = require('../controllers/userController.cjs');
 const authController = require('../controllers/authController.cjs');
@@ -39,3 +40,22 @@ router
   .delete(userController.deleteUser);
 
 module.exports = router;
+*/
+
+const express = require('express');
+const userController = require('../controllers/userController.cjs');
+const authController = require('../controllers/authController.cjs');
+
+const userRouter = express.Router();
+// auth related
+userRouter.post('/signup', authController.signup);
+userRouter.post('/login', authController.login);
+
+// user related
+userRouter.get('/', userController.getAllUsers);
+userRouter.post('/', userController.createUser);
+userRouter.get('/:id', userController.getUser);
+userRouter.patch('/:id', userController.updateUser);
+userRouter.delete('/:id', userController.deleteUser);
+
+module.exports = userRouter;

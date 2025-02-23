@@ -1,97 +1,90 @@
 class APIFeatures {
-  // NOTE: query=Model.find()
-  // Model.find() returns a query object in which we can run find() method
-  // queryString= what we pass in the url
-  constructor(query, queryString) {
-    this.query = query;
-    this.queryString = queryString;
+  constructor(modelQuery, queryObj) {
+    this.modelQuery = modelQuery;
+    this.queryObj = queryObj;
   }
 
-  filter() {
-    // 1A) Filtering
-    const queryObj = { ...this.queryString };
-    const excludeFields = ['page', 'sort', 'limit', 'fields', 'search'];
-    excludeFields.forEach((el) => delete queryObj[el]);
+  // search
+  search(searchAbleFields = []) {
+    if (this.queryObj.searchTerm) {
+      const searchTermValue = this.queryObj.searchTerm;
+      this.modelQuery = this.modelQuery.find({
+        $or: searchAbleFields.map((field) => ({
+          [field]: { $regex: searchTermValue, $options: 'i' },
+        })),
+      });
+    }
 
-    // 1B) Advanced filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(
-      /\b(gte|gt|lte|lt)\b/g,
+    return this;
+  }
+
+  // filter
+  filter() {
+    // 1. basic filter
+    let filterObj = { ...this.queryObj };
+    const excludeFields = [
+      'searchTerm',
+      'page',
+      'limit',
+      'fields',
+      'sort',
+    ];
+    excludeFields.forEach((item) => delete filterObj[item]);
+    // 2. advanced filter
+    const filterObjString = JSON.stringify(filterObj).replace(
+      /\b(lt|lte|gt|gte)\b/g,
       (match) => `$${match}`,
     );
 
-    this.query = this.query.find(JSON.parse(queryStr));
+    filterObj = JSON.parse(filterObjString);
+
+    this.modelQuery = this.modelQuery.find(filterObj);
+
     return this;
   }
 
+  // sort
   sort() {
-    // 2) sorting
-    if (this.queryString.sort) {
-      const sortedBy = this.queryString.sort.split(',').join(' ');
-      this.query = this.query.sort(sortedBy);
-    } else {
-      this.query = this.query.sort('-createdAt');
-    }
+    const sortObj = this.queryObj.sort
+      ? this.queryObj.sort.split(',').join(' ')
+      : '-createdAt';
+    this.modelQuery = this.modelQuery.sort(sortObj);
+
     return this;
   }
+  // fields
+  fields() {
+    const fieldsObj = this.queryObj.fields
+      ? this.queryObj.fields.split(',').join(' ')
+      : '-__v';
+    this.modelQuery = this.modelQuery.select(fieldsObj);
 
-  limitFields() {
-    // 3) Fields limiting
-    if (this.queryString.fields) {
-      const fields = this.queryString.fields.split(',').join(' ');
-      this.query = this.query.select(fields);
-    } else {
-      this.query = this.query.select('-__v');
-    }
     return this;
   }
-
-  // NOTE: have to add search features from anisul islam video
-
-  search(...searchFields) {
-    // 2) searching
-    if (this.queryString.search) {
-      const search = this.queryString.search;
-      const searchRegexp = new RegExp(`.*${search}.*`, 'i');
-
-      const queryBySearch = {
-        $or: searchFields.map((field) => ({
-          [field]: { $regex: searchRegexp },
-        })),
-      };
-      this.query = this.query.find(queryBySearch);
-    }
-    return this;
-  }
-
-  // search() {
-  //   // 2) searching
-  //   if (this.queryString.search) {
-  //     const search = this.queryString.search;
-  //     const searchRegexp = new RegExp(`.*${search}.*`, 'i');
-
-  //     const queryBySearch = {
-  //       $or: [
-  //         { name: { $regex: searchRegexp } },
-  //         { email: { $regex: searchRegexp } },
-  //         { phone: { $regex: searchRegexp } },
-  //       ],
-  //     };
-  //     this.query = this.query.find(queryBySearch);
-  //   }
-  //   return this;
-  // }
-
+  // paginate
   paginate() {
-    // NOTE: we receive count in client side from response results
-    // 3) pagination
-    const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 100;
+    const paginateObj = { ...this.queryObj };
+    // it ensure no negative values
+    const page = Math.max(1, parseInt(paginateObj.page) || 1);
+    const limit = Math.max(1, parseInt(paginateObj.limit) || 10);
     const skip = (page - 1) * limit;
-
-    this.query = this.query.skip(skip).limit(limit);
+    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
 
     return this;
+  }
+  // calculate pagination
+  async calculatePaginate() {
+    const paginateObj = { ...this.queryObj };
+    // it ensure no negative values
+    const page = Math.max(1, parseInt(paginateObj.page) || 1);
+    const limit = Math.max(1, parseInt(paginateObj.limit) || 10);
+    const finalFilter = await this.modelQuery.getFilter();
+    const totalDocs =
+      await this.modelQuery.model.countDocuments(finalFilter);
+
+    const totalPage = Math.ceil(totalDocs / limit);
+
+    return { page, limit, totalDocs, totalPage };
   }
 }
 

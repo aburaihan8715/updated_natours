@@ -1,3 +1,4 @@
+/*
 const express = require('express');
 
 const reviewController = require('../controllers/reviewController.cjs');
@@ -30,3 +31,10 @@ router
   );
 
 module.exports = router;
+*/
+
+const express = require('express');
+
+const reviewRouter = express.Router();
+
+module.exports = reviewRouter;

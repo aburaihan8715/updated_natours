@@ -4,6 +4,9 @@
   "main": "server.cjs",
   "scripts": {
     "dev": "nodemon src/server.cjs",
+    "start": "node src/server.cjs",
+    "prod": "NODE_ENV=production node src/server.cjs",
+    "debug": "ndb src/server.cjs",
     "lint": "eslint . --fix",
     "format": "prettier --write ."
   },

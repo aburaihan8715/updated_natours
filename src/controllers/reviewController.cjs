@@ -1,4 +1,4 @@
-// const AppError = require('../utils/appError');
+/*
 const Review = require('../models/reviewModel.cjs');
 const factory = require('./handlerFactory.cjs');
 
@@ -14,3 +14,10 @@ exports.getReview = factory.getOne(Review);
 exports.createReview = factory.createOne(Review);
 exports.deleteReview = factory.deleteOne(Review);
 exports.updateReview = factory.updateOne(Review);
+*/
+
+exports.getAllReviews = () => {};
+exports.getReview = () => {};
+exports.createReview = () => {};
+exports.deleteReview = () => {};
+exports.updateReview = () => {};
