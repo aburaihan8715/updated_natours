@@ -46,10 +46,25 @@ const express = require('express');
 const userController = require('../controllers/userController.cjs');
 const authController = require('../controllers/authController.cjs');
 
+const auth = require('../middlewares/auth.cjs');
+const { USER_ROLE } = require('../constants/index.cjs');
+
 const userRouter = express.Router();
 // auth related
 userRouter.post('/signup', authController.signup);
 userRouter.post('/login', authController.login);
+userRouter.post('/forget-password', authController.forgetPassword);
+userRouter.patch('/reset-password/:token', authController.resetPassword);
+userRouter.patch(
+  '/update-my-password',
+  auth(
+    USER_ROLE.admin,
+    USER_ROLE.user,
+    USER_ROLE.guide,
+    USER_ROLE.leadGuide,
+  ),
+  authController.updatePassword,
+);
 
 // user related
 userRouter.get('/', userController.getAllUsers);

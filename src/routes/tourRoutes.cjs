@@ -63,6 +63,8 @@ module.exports = router;
 
 const express = require('express');
 const tourController = require('../controllers/tourController.cjs');
+const auth = require('../middlewares/auth.cjs');
+const { USER_ROLE } = require('../constants/index.cjs');
 
 const tourRouter = express.Router();
 
@@ -75,7 +77,7 @@ tourRouter.get(
 tourRouter.get('/tour-stats', tourController.tourStats);
 tourRouter.get('/monthly-plan/:year', tourController.monthlyPlan);
 
-tourRouter.get('/', tourController.getAllTours);
+tourRouter.get('/', auth(USER_ROLE.user), tourController.getAllTours);
 tourRouter.post('/', tourController.createTour);
 tourRouter.get('/:id', tourController.getTour);
 tourRouter.patch('/:id', tourController.updateTour);

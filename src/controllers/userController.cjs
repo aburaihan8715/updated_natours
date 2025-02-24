@@ -124,12 +124,17 @@ exports.deleteUser = factory.deleteOne(User);
 */
 
 const { status: httpStatus } = require('http-status');
+const User = require('../models/userModel.cjs');
+
+const sendResponse = require('../utils/sendResponse.cjs');
 
 exports.getAllUsers = async (req, res) => {
-  res.status(httpStatus.OK).json({
-    status: 'success',
-    message: 'Data fetched successfully!!',
-    data: null,
+  const users = await User.find({});
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    message: 'Data fetched successfully!',
+    data: users,
   });
 };
 

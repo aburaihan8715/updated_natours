@@ -1,35 +1,17 @@
 const { status: httpStatus } = require('http-status');
 const config = require('../config/index.cjs');
-const AppError = require('../errors/AppError.cjs');
-
-const handleCastError = (err) => {
-  const message = `Invalid ${err.path}: ${err.value}`;
-  return new AppError(httpStatus.BAD_REQUEST, message);
-};
-
-const handleDuplicateError = (err) => {
-  const message = `Duplicate field value: ${err.keyValue.name}. Please use another value!`;
-  return new AppError(httpStatus.BAD_REQUEST, message);
-};
-
-const handleValidationError = (err) => {
-  const errors = Object.values(err.errors).map((el) => el.message);
-  const message = `Invalid input data. ${errors.join('. ')}`;
-  return new AppError(httpStatus.BAD_REQUEST, message);
-};
-
-// const handleJWTError = () => {
-//   console.log('jwt error');
-// };
-
-// const handleJWTExpiredError = () => {
-//   console.log('jwt expired error');
-// };
+const handleDuplicateError = require('../errors/handleDuplicateError.cjs');
+const handleCastError = require('../errors/handleCastError.cjs');
+const handleValidationError = require('../errors/handleValidationError.cjs');
+const handleJWTError = require('../errors/handleJwtError.cjs');
+const handleJWTExpiredError = require('../errors/handleJwtExpiredError.cjs');
 
 const globalErrorHandler = (err, req, res, next) => {
   if (err?.code === 11000) err = handleDuplicateError(err);
   if (err.name === 'CastError') err = handleCastError(err);
   if (err.name === 'ValidationError') err = handleValidationError(err);
+  if (err.name === 'JsonWebTokenError') err = handleJWTError();
+  if (err.name === 'TokenExpiredError') err = handleJWTExpiredError();
 
   if (err.isOperational) {
     console.error('ERROR 💥', err);

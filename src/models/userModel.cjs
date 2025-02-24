@@ -133,6 +133,7 @@ module.exports = User;
 
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -187,19 +188,23 @@ const userSchema = new mongoose.Schema({
     select: false,
   },
 
-  // passwordChangedAt: Date,
-  // passwordResetToken: String,
-  // passwordResetExpires: Date,
+  passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 
 // Document middlewares
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
-
   this.password = await bcrypt.hash(this.password, 8);
-
   this.passwordConfirm = undefined;
+  next();
+});
 
+// manipulate passwordChangedAt
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
@@ -220,14 +225,33 @@ userSchema.statics.isPasswordCorrect = async function (
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
-userSchema.statics.isPasswordChangedAfterJwtIssued = function (
-  passwordChangedTimestamp,
+// Instance methods
+// NOTE: If in instance method this refer current doc but in static method this refer class. So if we want to access the current doc, we need to use the instance method not static method.
+userSchema.methods.isPasswordChangedAfterJwtIssued = function (
   jwtIssuedTimestamp,
 ) {
-  const passwordChangedTime =
-    new Date(passwordChangedTimestamp).getTime() / 1000;
-  return passwordChangedTime > jwtIssuedTimestamp;
+  if (this.passwordChangedAt) {
+    const passwordChangedTime =
+      new Date(this.passwordChangedAt).getTime() / 1000;
+    return passwordChangedTime > jwtIssuedTimestamp;
+  }
+
+  return false;
+};
+
+// generate random token
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = mongoose.models.User || mongoose.model('User', userSchema);
+
 module.exports = User;
