@@ -301,7 +301,6 @@ const tourSchema = new mongoose.Schema(
 
     imageCover: {
       type: String,
-      required: [true, 'A tour must have a cover image'],
     },
 
     images: [String],
@@ -358,6 +357,11 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
+// indexing
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' });
+
 // virtuals property
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
@@ -375,11 +379,27 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-// Aggregate middleware
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
   next();
 });
+
+// virtuals populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
+});
+
+// Aggregate middleware
+// NOTE: if we use it geoNear do not work cause geoNear should be the first pipeline
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+//   next();
+// });
 
 const Tour = mongoose.models.Tour || mongoose.model('Tour', tourSchema);
 

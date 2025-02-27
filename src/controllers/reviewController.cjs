@@ -1,23 +1,15 @@
-/*
 const Review = require('../models/reviewModel.cjs');
-const factory = require('./handlerFactory.cjs');
+const Factory = require('../builder/Factory.cjs');
 
-exports.setTourUserIds = (req, res, next) => {
+exports.setTourAndUserIds = (req, res, next) => {
   // Allow nested routes
   if (!req.body.tour) req.body.tour = req.params.tourId;
-  if (!req.body.user) req.body.user = req.user.id;
+  if (!req.body.user) req.body.user = req.user._id;
   next();
 };
 
-exports.getAllReviews = factory.getAll(Review);
-exports.getReview = factory.getOne(Review);
-exports.createReview = factory.createOne(Review);
-exports.deleteReview = factory.deleteOne(Review);
-exports.updateReview = factory.updateOne(Review);
-*/
-
-exports.getAllReviews = () => {};
-exports.getReview = () => {};
-exports.createReview = () => {};
-exports.deleteReview = () => {};
-exports.updateReview = () => {};
+exports.createReview = Factory.createOne(Review);
+exports.getAllReviews = Factory.getAll(Review);
+exports.getReview = Factory.getOne(Review);
+exports.updateReview = Factory.updateOne(Review);
+exports.deleteReview = Factory.deleteOne(Review);

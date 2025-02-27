@@ -193,18 +193,27 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date,
 });
 
-// Document middlewares
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  this.password = await bcrypt.hash(this.password, 8);
-  this.passwordConfirm = undefined;
+  if (this.isNew) {
+    this.password = await bcrypt.hash(this.password, 8);
+    this.passwordConfirm = undefined;
+    next();
+  }
   next();
 });
 
-// manipulate passwordChangedAt
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('password') || this.isNew) return next();
-  this.passwordChangedAt = Date.now() - 1000;
+  if (this.isModified('password') && !this.isNew) {
+    this.password = await bcrypt.hash(this.password, 8);
+    this.passwordConfirm = undefined;
+    this.passwordChangedAt = Date.now() - 1000;
+    next();
+  }
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 

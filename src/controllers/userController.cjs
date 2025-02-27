@@ -123,49 +123,60 @@ exports.updateUser = factory.updateOne(User);
 exports.deleteUser = factory.deleteOne(User);
 */
 
-const { status: httpStatus } = require('http-status');
 const User = require('../models/userModel.cjs');
+const catchAsync = require('../utils/catchAsync.cjs');
+const AppError = require('../errors/appError.cjs');
+const Factory = require('../builder/Factory.cjs');
 
-const sendResponse = require('../utils/sendResponse.cjs');
+const filterObj = require('../utils/filterObj.cjs');
 
-exports.getAllUsers = async (req, res) => {
-  const users = await User.find({});
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    message: 'Data fetched successfully!',
-    data: users,
-  });
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
 };
 
-exports.getUser = async (req, res) => {
-  res.status(httpStatus.OK).json({
+exports.updateMe = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        'This route is not for password updates. Please use /update-my-password.',
+        400,
+      ),
+    );
+  }
+
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    filteredBody,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+
+  res.status(200).json({
     status: 'success',
-    message: 'Data fetched successfully!!',
+    data: updatedUser,
+  });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
     data: null,
   });
-};
+});
 
-exports.updateUser = async (req, res) => {
-  res.status(httpStatus.OK).json({
-    status: 'success',
-    message: 'Data updated successfully!!',
-    data: null,
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined! Please use /signup instead',
   });
 };
-
-exports.deleteUser = async (req, res) => {
-  res.status(httpStatus.OK).json({
-    status: 'success',
-    message: 'Data deleted successfully!!',
-    data: null,
-  });
-};
-
-exports.createUser = async (req, res) => {
-  res.status(httpStatus.CREATED).json({
-    status: 'success',
-    message: 'Data created successfully!!',
-    data: null,
-  });
-};
+exports.getUser = Factory.getOne(User);
+exports.getAllUsers = Factory.getAll(User);
+exports.updateUser = Factory.updateOne(User);
+exports.deleteUser = Factory.deleteOne(User);

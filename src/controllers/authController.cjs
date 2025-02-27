@@ -312,8 +312,6 @@ const createAndSendToken = (user, statusCode, res) => {
     maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
-  user.password = undefined;
-
   res.status(statusCode).json({
     status: 'success',
     data: {
@@ -324,7 +322,13 @@ const createAndSendToken = (user, statusCode, res) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
+  const { name, email, password, passwordConfirm } = req.body;
+  const newUser = await User.create({
+    name,
+    email,
+    password,
+    passwordConfirm,
+  });
 
   if (!newUser) {
     next(
