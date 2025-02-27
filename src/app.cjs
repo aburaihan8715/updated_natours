@@ -96,6 +96,10 @@ const { status: httpStatus } = require('http-status');
 const morgan = require('morgan');
 const ratelimit = require('express-rate-limit');
 const path = require('path');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const { xss } = require('express-xss-sanitizer');
+const hpp = require('hpp');
 
 const userRouter = require('./routes/userRoutes.cjs');
 const bookingRouter = require('./routes/bookingRoutes.cjs');
@@ -103,12 +107,13 @@ const reviewRouter = require('./routes/reviewRoutes.cjs');
 const tourRouter = require('./routes/tourRoutes.cjs');
 const globalErrorHandler = require('./middlewares/globalErrorHandler.cjs');
 const AppError = require('./errors/appError.cjs');
-const mongoSanitize = require('express-mongo-sanitize');
-const helmet = require('helmet');
-const { xss } = require('express-xss-sanitizer');
-const hpp = require('hpp');
+const viewRouter = require('./routes/viewRoutes.cjs');
 
 const app = express();
+
+// set view engine and view path
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // add some headers properties for security
 app.use(helmet());
@@ -156,22 +161,31 @@ app.use(
   }),
 );
 
+app.use((req, res, next) => {
+  res.setHeader(
+    'Content-Security-Policy',
+    "script-src 'self' https://unpkg.com;",
+  );
+  next();
+});
 // test middleware
 app.use((req, res, next) => {
-  console.log(req.query);
   req.requestTime = new Date().toISOString();
   next();
 });
 
 // test route
-app.get('/', (req, res) => {
+app.get('/test', (req, res) => {
   res.status(httpStatus.OK).json({
     status: 'success',
     message: 'Hello, From server!!',
   });
 });
 
-// routes
+// view route
+app.use('/', viewRouter);
+
+// api routes
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/bookings', bookingRouter);
 app.use('/api/v1/reviews', reviewRouter);
