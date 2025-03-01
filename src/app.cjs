@@ -108,6 +108,7 @@ const tourRouter = require('./routes/tourRoutes.cjs');
 const globalErrorHandler = require('./middlewares/globalErrorHandler.cjs');
 const AppError = require('./errors/appError.cjs');
 const viewRouter = require('./routes/viewRoutes.cjs');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -120,6 +121,8 @@ app.use(helmet());
 
 // parse req.body for access body data to the express server
 app.use(express.json());
+// cookie parser
+app.use(cookieParser());
 
 // allow access to static files
 app.use(express.static(path.join(__dirname, '../public')));
@@ -164,7 +167,7 @@ app.use(
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "script-src 'self' https://unpkg.com;",
+    "script-src 'self' https://unpkg.com https://cdnjs.cloudflare.com",
   );
   next();
 });

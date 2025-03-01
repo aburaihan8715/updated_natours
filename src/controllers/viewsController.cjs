@@ -81,7 +81,7 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
 });
 */
 
-const AppError = require('../errors/AppError.cjs');
+const AppError = require('../errors/appError.cjs');
 const Tour = require('../models/tourModel.cjs');
 const catchAsync = require('../utils/catchAsync.cjs');
 
@@ -113,5 +113,11 @@ exports.getTour = catchAsync(async (req, res, next) => {
   res.status(200).render('tour', {
     title: 'The Forest Hiker Tour',
     tour,
+  });
+});
+
+exports.getLoginForm = catchAsync(async (req, res, next) => {
+  res.status(200).render('login', {
+    title: 'Log into your account',
   });
 });

@@ -37,11 +37,16 @@
 // module.exports = router;
 
 const express = require('express');
+const checkLogin = require('../middlewares/checkLogin.cjs');
+const viewController = require('../controllers/viewsController.cjs');
 
 const viewRouter = express.Router();
-const viewController = require('../controllers/viewsController.cjs');
+
+// it will check bellow route if user logged in or not
+viewRouter.use(checkLogin);
 
 viewRouter.get('/', viewController.getOverview);
 viewRouter.get('/tour/:slug', viewController.getTour);
+viewRouter.get('/login', viewController.getLoginForm);
 
 module.exports = viewRouter;

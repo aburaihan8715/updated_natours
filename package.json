@@ -1,11 +1,13 @@
 {
   "name": "updated-natours",
   "version": "1.0.0",
-  "main": "server.cjs",
+  "main": "public/js/bundle.js",
   "scripts": {
     "dev": "nodemon src/server.cjs",
     "start": "node src/server.cjs",
     "prod": "NODE_ENV=production node src/server.cjs",
+    "watch": "parcel watch ./public/js/index.js",
+    "build": "parcel build ./public/js/index.js",
     "lint": "eslint . --fix",
     "format": "prettier --write ."
   },
@@ -45,6 +47,7 @@
     "eslint-plugin-prettier": "^5.2.3",
     "globals": "^15.15.0",
     "nodemon": "^3.1.9",
+    "parcel": "^2.13.3",
     "prettier": "^3.5.1"
   }
 }
