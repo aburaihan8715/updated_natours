@@ -4,6 +4,7 @@ const config = require('../config/index.cjs');
 const User = require('../models/userModel.cjs');
 
 // Only for rendered pages, no errors! (this for client side)
+// NOTE: as we don not throw any errors, so we should not use catchAsync here
 const checkLogin = async (req, res, next) => {
   if (req.cookies.accessToken) {
     try {

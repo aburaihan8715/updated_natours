@@ -48,5 +48,6 @@ viewRouter.use(checkLogin);
 viewRouter.get('/', viewController.getOverview);
 viewRouter.get('/tour/:slug', viewController.getTour);
 viewRouter.get('/login', viewController.getLoginForm);
+viewRouter.get('/me', viewController.getAccount);
 
 module.exports = viewRouter;

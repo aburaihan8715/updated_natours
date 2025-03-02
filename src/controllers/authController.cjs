@@ -305,11 +305,13 @@ const createAndSendToken = (user, statusCode, res) => {
     config.JWT_ACCESS_EXPIRES_IN,
   );
 
+  // NOTE: in cookies maxAge take number and expires take date we can use any one
   res.cookie('accessToken', accessToken, {
     secure: config.NODE_ENV === 'production',
     httpOnly: true,
-    sameSite: true,
-    maxAge: 1000 * 60 * 60 * 24 * 365,
+    expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year
+    // maxAge: 1000 * 60 * 60 * 24 * 365,
+    // sameSite: true,
   });
 
   res.status(statusCode).json({
@@ -374,6 +376,14 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   createAndSendToken(user, httpStatus.OK, res);
 });
+
+exports.logout = (req, res) => {
+  res.cookie('accessToken', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000), // 10 seconds
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
 
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   const user = await User.getUserByEmail(req.body.email);
