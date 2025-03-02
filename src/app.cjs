@@ -120,7 +120,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(helmet());
 
 // parse req.body for access body data to the express server
-app.use(express.json());
+app.use(express.json({ limit: '10kb' }));
+// parse url encoded data means form data for getting access to the express server
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // cookie parser
 app.use(cookieParser());
 

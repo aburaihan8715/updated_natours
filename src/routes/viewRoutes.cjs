@@ -37,17 +37,21 @@
 // module.exports = router;
 
 const express = require('express');
-const checkLogin = require('../middlewares/checkLogin.cjs');
 const viewController = require('../controllers/viewsController.cjs');
+const auth = require('../middlewares/auth.cjs');
+const checkLogin = require('../middlewares/checkLogin.cjs');
 
 const viewRouter = express.Router();
 
-// it will check bellow route if user logged in or not
-viewRouter.use(checkLogin);
+viewRouter.get('/', checkLogin, viewController.getOverview);
+viewRouter.get('/tour/:slug', checkLogin, viewController.getTour);
+viewRouter.get('/login', checkLogin, viewController.getLoginForm);
+viewRouter.get('/me', auth(), viewController.getAccount);
 
-viewRouter.get('/', viewController.getOverview);
-viewRouter.get('/tour/:slug', viewController.getTour);
-viewRouter.get('/login', viewController.getLoginForm);
-viewRouter.get('/me', viewController.getAccount);
+viewRouter.post(
+  '/submit-user-data',
+  auth(),
+  viewController.updateUserData,
+);
 
 module.exports = viewRouter;

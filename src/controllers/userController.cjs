@@ -130,6 +130,17 @@ const Factory = require('../builder/Factory.cjs');
 
 const filterObj = require('../utils/filterObj.cjs');
 
+exports.createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not defined! Please use /signup instead',
+  });
+};
+exports.getUser = Factory.getOne(User);
+exports.getAllUsers = Factory.getAll(User);
+exports.updateUser = Factory.updateOne(User);
+exports.deleteUser = Factory.deleteOne(User);
+
 exports.getMe = (req, res, next) => {
   req.params.id = req.user._id;
   next();
@@ -169,14 +180,3 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     data: null,
   });
 });
-
-exports.createUser = (req, res) => {
-  res.status(500).json({
-    status: 'error',
-    message: 'This route is not defined! Please use /signup instead',
-  });
-};
-exports.getUser = Factory.getOne(User);
-exports.getAllUsers = Factory.getAll(User);
-exports.updateUser = Factory.updateOne(User);
-exports.deleteUser = Factory.deleteOne(User);

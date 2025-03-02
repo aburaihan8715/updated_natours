@@ -378,7 +378,7 @@ exports.login = catchAsync(async (req, res, next) => {
 });
 
 exports.logout = (req, res) => {
-  res.cookie('accessToken', 'loggedout', {
+  res.cookie('accessToken', null, {
     expires: new Date(Date.now() + 10 * 1000), // 10 seconds
     httpOnly: true,
   });

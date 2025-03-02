@@ -18,7 +18,10 @@ const auth = (...roles) => {
 
     if (!token) {
       return next(
-        new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized!'),
+        new AppError(
+          httpStatus.UNAUTHORIZED,
+          'You are not logged in! Please log in to get access',
+        ),
       );
     }
     const decoded = await jwtUtils.verifyToken(
@@ -57,7 +60,8 @@ const auth = (...roles) => {
       );
     }
 
-    req.user = decoded;
+    res.locals.user = user; // this is for accessing user in client page
+    req.user = user;
     next();
   });
 };
