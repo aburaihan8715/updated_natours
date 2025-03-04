@@ -1,1 +1,18 @@
-NOTE: response should be same
+NOTE: 
+1.response should be same
+
+2. **I think it should be stopped here cause image upload not possible in my way it very complicated**
+
+
+
+
+
+
+// default user photo
+https://i.ibb.co.com/KwgKgw1/noavatar.png
+
+// default cover image
+https://i.ibb.co.com/ssCTmq5/6-4g-DCfx-M.jpg
+
+// default card image
+https://i.ibb.co.com/72dy69W/class-cover-11.png
