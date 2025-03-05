@@ -291,6 +291,7 @@ const jwtUtils = require('../utils/jwtUtils.cjs');
 const config = require('../config/index.cjs');
 const sendEmail = require('../utils/email.cjs');
 const crypto = require('crypto');
+const Email = require('../utils/emailV2.cjs');
 
 const createAndSendToken = (user, statusCode, res) => {
   const jwtPayload = {
@@ -337,6 +338,10 @@ exports.signup = catchAsync(async (req, res, next) => {
       new AppError(httpStatus.BAD_REQUEST, 'Failed to create a new user!'),
     );
   }
+
+  const url = `${req.protocol}://${req.get('host')}/me`;
+  // console.log(url);
+  await new Email(newUser, url).sendWelcome();
 
   createAndSendToken(newUser, httpStatus.CREATED, res);
 });
