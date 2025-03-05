@@ -1,12 +1,6 @@
 NOTE: 
 1.response should be same
 
-2. **I think it should be stopped here cause image upload not possible in my way it very complicated**
-
-
-
-
-
 
 // default user photo
 https://i.ibb.co.com/KwgKgw1/noavatar.png

@@ -16,8 +16,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fluidjs/multer-cloudinary": "^1.0.4",
     "axios": "^1.8.1",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.5.1",
     "compression": "^1.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",

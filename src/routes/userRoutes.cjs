@@ -3,6 +3,8 @@ const userController = require('../controllers/userController.cjs');
 const authController = require('../controllers/authController.cjs');
 const auth = require('../middlewares/auth.cjs');
 const { USER_ROLE } = require('../constants/index.cjs');
+const parseFormString = require('../middlewares/parseFormString.cjs');
+const userFileUpload = require('../middlewares/userFileUpload.cjs');
 
 const userRouter = express.Router();
 
@@ -17,7 +19,12 @@ userRouter.patch('/reset-password/:token', authController.resetPassword);
 userRouter.use(auth()); // bellow all are protected
 
 userRouter.patch('/update-my-password', authController.updatePassword);
-userRouter.patch('/update-me', userController.updateMe);
+userRouter.patch(
+  '/update-me',
+  userFileUpload.single('file'),
+  parseFormString(),
+  userController.updateMe,
+);
 userRouter.delete('/delete-me', userController.deleteMe);
 userRouter.get('/me', userController.getMe, userController.getUser);
 
