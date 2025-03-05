@@ -13,13 +13,13 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'updatedNatours/users', // Optional: Folder for uploaded files in Cloudinary
-    allowed_formats: ['jpg', 'jpeg', 'png'], // Optional: Restrict allowed file types
-    transformation: [{ width: 356, height: 200, crop: 'limit' }], // Optional: Apply image transformations on upload
+    folder: 'updatedNatours/tourImages', // Optional: Folder for uploaded files in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'], // Optional: Restrict allowed file types
+    transformation: [{ width: 1600, height: 900, crop: 'limit' }], // Optional: Apply image transformations on upload
     public_id: Math.floor(Date.now() / 1000),
   },
 });
 
-const userFileUpload = multer({ storage: storage });
+const tourFileUpload = multer({ storage: storage });
 
-module.exports = userFileUpload;
+module.exports = tourFileUpload;

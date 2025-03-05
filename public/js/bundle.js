@@ -121,16 +121,20 @@ if ($d0f7ce18c37ad6f6$var$loginForm) $d0f7ce18c37ad6f6$var$loginForm.addEventLis
 if ($d0f7ce18c37ad6f6$var$logoutBtn) $d0f7ce18c37ad6f6$var$logoutBtn.addEventListener('click', (0, $ef37cb3ad0fa2fc3$export$a0973bcfe11b05c9));
 if ($d0f7ce18c37ad6f6$var$userDataForm) $d0f7ce18c37ad6f6$var$userDataForm.addEventListener('submit', async (e)=>{
     e.preventDefault();
-    // const form = new FormData();
-    // form.append('name', document.getElementById('name').value);
-    // form.append('email', document.getElementById('email').value);
-    // form.append('photo', document.getElementById('photo').files[0]);
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
-    await (0, $936fcc27ffb6bbb1$export$f558026a994b6051)({
+    const file = document.getElementById('photo').files[0];
+    const data = {
         name: name,
         email: email
-    }, 'data');
+    };
+    console.log('name: ', name);
+    console.log('email: ', email);
+    console.log('file: ', file);
+    const form = new FormData();
+    form.append('data', JSON.stringify(data));
+    if (file) form.append('file', file);
+    (0, $936fcc27ffb6bbb1$export$f558026a994b6051)(form, 'data');
 });
 if ($d0f7ce18c37ad6f6$var$userPasswordForm) $d0f7ce18c37ad6f6$var$userPasswordForm.addEventListener('submit', async (e)=>{
     e.preventDefault();

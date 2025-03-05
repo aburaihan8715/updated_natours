@@ -548,6 +548,12 @@ exports.getTour = catchAsync(async (req, res, next) => {
 });
 
 exports.updateTour = catchAsync(async (req, res, next) => {
+  const imageCover = req.files.imageCover[0].path;
+  const images = req.files.images.map((image) => image.path);
+
+  if (imageCover) req.body.imageCover = imageCover;
+  if (images) req.body.images = images;
+
   const updatedTour = await Tour.findByIdAndUpdate(
     req.params.id,
     req.body,
@@ -559,10 +565,11 @@ exports.updateTour = catchAsync(async (req, res, next) => {
       new AppError(httpStatus.NOT_FOUND, 'Tour not found with this ID'),
     );
   }
-  res.status(status.OK).json({
+
+  res.status(httpStatus.OK).json({
     status: 'success',
     message: 'Data updated successfully!!',
-    data: updatedTour,
+    data: null,
   });
 });
 

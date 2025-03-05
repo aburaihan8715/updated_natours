@@ -156,10 +156,9 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     );
   }
 
-  if (req.file) {
-    req.body.photo = req.file.path;
-  }
-  const filteredBody = filterObj(req.body, 'name', 'email', 'photo');
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  if (req.file) filteredBody.photo = req.file.path;
+
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
     filteredBody,

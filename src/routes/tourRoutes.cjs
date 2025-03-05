@@ -1,6 +1,9 @@
 const express = require('express');
 const tourController = require('../controllers/tourController.cjs');
 const reviewRouter = require('./reviewRoutes.cjs');
+const auth = require('../middlewares/auth.cjs');
+const tourFileUpload = require('../middlewares/tourFileUpload.cjs');
+const parseFormString = require('../middlewares/parseFormString.cjs');
 
 const tourRouter = express.Router();
 
@@ -26,7 +29,16 @@ tourRouter
 tourRouter.get('/', tourController.getAllTours);
 tourRouter.post('/', tourController.createTour);
 tourRouter.get('/:id', tourController.getTour);
-tourRouter.patch('/:id', tourController.updateTour);
+tourRouter.patch(
+  '/:id',
+  auth(),
+  tourFileUpload.fields([
+    { name: 'imageCover', maxCount: 1 },
+    { name: 'images', maxCount: 3 },
+  ]),
+  parseFormString(),
+  tourController.updateTour,
+);
 tourRouter.delete('/:id', tourController.deleteTour);
 
 module.exports = tourRouter;

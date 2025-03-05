@@ -33,14 +33,18 @@ if (logoutBtn) {
 if (userDataForm) {
   userDataForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    // const form = new FormData();
-    // form.append('name', document.getElementById('name').value);
-    // form.append('email', document.getElementById('email').value);
-    // form.append('photo', document.getElementById('photo').files[0]);
-
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
-    await updateSettings({ name, email }, 'data');
+    const file = document.getElementById('photo').files[0];
+    const data = { name, email };
+    console.log('name: ', name);
+    console.log('email: ', email);
+    console.log('file: ', file);
+
+    const form = new FormData();
+    form.append('data', JSON.stringify(data));
+    if (file) form.append('file', file);
+    updateSettings(form, 'data');
   });
 }
 
