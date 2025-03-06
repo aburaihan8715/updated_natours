@@ -33,6 +33,7 @@
     "latlng",
     "leaftlet",
     "natours",
+    "unformat",
     "virtuals"
   ],
 }
