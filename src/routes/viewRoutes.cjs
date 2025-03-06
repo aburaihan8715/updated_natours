@@ -40,10 +40,16 @@ const express = require('express');
 const viewController = require('../controllers/viewsController.cjs');
 const auth = require('../middlewares/auth.cjs');
 const checkLogin = require('../middlewares/checkLogin.cjs');
+const bookingController = require('../controllers/bookingController.cjs');
 
 const viewRouter = express.Router();
 
-viewRouter.get('/', checkLogin, viewController.getOverview);
+viewRouter.get(
+  '/',
+  bookingController.createBookingCheckout,
+  checkLogin,
+  viewController.getOverview,
+);
 viewRouter.get('/tour/:slug', checkLogin, viewController.getTour);
 viewRouter.get('/login', checkLogin, viewController.getLoginForm);
 viewRouter.get('/me', auth(), viewController.getAccount);
@@ -53,5 +59,7 @@ viewRouter.post(
   auth(),
   viewController.updateUserData,
 );
+
+viewRouter.get('/my-tours', auth(), viewController.getMyTours);
 
 module.exports = viewRouter;

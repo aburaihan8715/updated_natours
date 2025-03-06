@@ -8,6 +8,7 @@ block append head
   script(src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
     crossorigin="")
+  script(src="https://js.stripe.com/v3/")
 
 mixin overviewBox(label,text,icon)
   .overview-box__detail
@@ -52,7 +53,7 @@ block content
 
           each guide in tour.guides
             .overview-box__detail
-              img.overview-box__img(src=(guide && guide.photo ? guide.photo :'https://i.ibb.co/KwgKgw1/noavatar.png') alt=`${guide.name}`)
+              img.overview-box__img(src=('https://i.ibb.co/KwgKgw1/noavatar.png') alt=`${guide.name}`)
 
               -if(guide.role==='lead-guide')
                 span.overview-box__label Lead guide
@@ -70,9 +71,8 @@ block content
   section.section-pictures
     each img, i in tour.images
       .picture-box
-        img.picture-box__img(src=(img ? img : 'https://i.ibb.co.com/72dy69W/class-cover-11.png'), alt=`The Park Camper Tour ${i + 1}`,class=`picture-box__img--${i + 1}`)
+        img.picture-box__img(src=('https://i.ibb.co.com/72dy69W/class-cover-11.png'), alt=`The Park Camper Tour ${i + 1}`,class=`picture-box__img--${i + 1}`)
 
-  //- NOTE: avoid map section because map box need credit card
   section.section-map
     #map(data-locations=`${JSON.stringify(tour.locations)}`)
 

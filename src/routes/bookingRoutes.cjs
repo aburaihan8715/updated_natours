@@ -1,37 +1,30 @@
-/*
 const express = require('express');
 const bookingController = require('../controllers/bookingController.cjs');
-const authController = require('../controllers/authController.cjs');
+const auth = require('../middlewares/auth.cjs');
 
-const router = express.Router();
+const bookingRouter = express.Router();
 
 // All routes are protected after this middleware
-router.use(authController.protect);
+bookingRouter.use(auth());
 
-router.get(
+bookingRouter.get(
   '/checkout-session/:tourId',
+  auth(),
   bookingController.getCheckoutSession,
 );
 
 // All routes are restricted to (admin and lead-guide) after this middleware
-router.use(authController.restrictTo('admin', 'lead-guide'));
+bookingRouter.use(auth('admin', 'lead-guide'));
 
-router
+bookingRouter
   .route('/')
   .get(bookingController.getAllBookings)
   .post(bookingController.createBooking);
 
-router
+bookingRouter
   .route('/:id')
   .get(bookingController.getBooking)
   .patch(bookingController.updateBooking)
   .delete(bookingController.deleteBooking);
-
-module.exports = router;
-*/
-
-const express = require('express');
-
-const bookingRouter = express.Router();
 
 module.exports = bookingRouter;

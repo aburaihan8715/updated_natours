@@ -12,14 +12,34 @@ module.exports = class Email {
   }
 
   newTransport() {
+    if (process.env.NODE_ENV === 'production') {
+      return nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 587,
+        // NOTE: secure true or false depending on port (587 need false and 465 need true)
+        // secure: config.NODE_ENV === 'production',
+        auth: {
+          user: 'aburaihan8715@gmail.com',
+          pass: 'yfvbhverhvmxyhqn',
+        },
+      });
+    }
+
     return nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      // NOTE: secure true or false depending on port (587 need false and 465 need true)
-      // secure: config.NODE_ENV === 'production',
+      // NOTE: ====same for prod and dev (use google smtp)===
+      // host: 'smtp.gmail.com',
+      // port: 587,
+      // auth: {
+      //   user: 'aburaihan8715@gmail.com',
+      //   pass: 'yfvbhverhvmxyhqn',
+      // },
+
+      // NOTE: ====OR mailtrap===
+      host: 'sandbox.smtp.mailtrap.io',
+      port: 2525,
       auth: {
-        user: 'aburaihan8715@gmail.com',
-        pass: 'yfvbhverhvmxyhqn',
+        user: '4c431dce281ffd',
+        pass: '5e38441521f773',
       },
     });
   }
@@ -56,7 +76,7 @@ module.exports = class Email {
   async sendPasswordReset() {
     await this.send(
       'passwordReset',
-      'Your password reset token (valid for minutes)!',
+      'Your password reset token (valid only for 10 minutes)!',
     );
   }
 };

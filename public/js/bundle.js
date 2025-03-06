@@ -85,6 +85,24 @@ const $ef37cb3ad0fa2fc3$export$a0973bcfe11b05c9 = async ()=>{
 
 
 /* eslint-disable no-undef */ 
+const $6710bca62beba915$var$stripe = Stripe('pk_test_51NPIZtBuABpbiaqFr21NjLotEhCO3dmlsuwP1EqlxgieAjmsqvzw0RhegMsRQADB9WMQ7gwR1N5DiCLjcs0MBkOU00QUOTNKI7');
+const $6710bca62beba915$export$8d5bdbf26681c0c2 = async (tourId)=>{
+    try {
+        // 1) Get checkout session from API
+        const session = await axios(`/api/v1/bookings/checkout-session/${tourId}`);
+        // console.log(session);
+        // 2) Create checkout form + charge credit card
+        await $6710bca62beba915$var$stripe.redirectToCheckout({
+            sessionId: session.data.session.id
+        });
+    } catch (error) {
+        console.log(error);
+        (0, $3adf927435cf4518$export$de026b00723010c1)('error', error);
+    }
+};
+
+
+/* eslint-disable no-undef */ 
 const $936fcc27ffb6bbb1$export$f558026a994b6051 = async (data, type)=>{
     try {
         const url = type === 'password' ? '/api/v1/users/update-my-password' : '/api/v1/users/update-me';
@@ -106,7 +124,7 @@ const $d0f7ce18c37ad6f6$var$loginForm = document.querySelector('.form--login');
 const $d0f7ce18c37ad6f6$var$logoutBtn = document.querySelector('.nav__el--logout');
 const $d0f7ce18c37ad6f6$var$userDataForm = document.querySelector('.form-user-data');
 const $d0f7ce18c37ad6f6$var$userPasswordForm = document.querySelector('.form-user-password');
-// const bookBtn = document.getElementById('book-tour');
+const $d0f7ce18c37ad6f6$var$bookBtn = document.getElementById('book-tour');
 // Delegation
 if ($d0f7ce18c37ad6f6$var$mapBox) {
     const locations = JSON.parse($d0f7ce18c37ad6f6$var$mapBox.dataset.locations);
@@ -151,6 +169,11 @@ if ($d0f7ce18c37ad6f6$var$userPasswordForm) $d0f7ce18c37ad6f6$var$userPasswordFo
     document.getElementById('password-current').value = '';
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
+});
+if ($d0f7ce18c37ad6f6$var$bookBtn) $d0f7ce18c37ad6f6$var$bookBtn.addEventListener('click', (e)=>{
+    e.target.textContent = 'Processing...';
+    const { tourId: tourId } = e.target.dataset;
+    (0, $6710bca62beba915$export$8d5bdbf26681c0c2)(tourId);
 });
 
 

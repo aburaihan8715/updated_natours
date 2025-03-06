@@ -82,6 +82,7 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
 */
 
 const AppError = require('../errors/appError.cjs');
+const Booking = require('../models/bookingModel.cjs');
 const Tour = require('../models/tourModel.cjs');
 const User = require('../models/userModel.cjs');
 const catchAsync = require('../utils/catchAsync.cjs');
@@ -144,5 +145,19 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
   res.status(200).render('account', {
     title: 'Your account',
     user: updatedUser,
+  });
+});
+
+exports.getMyTours = catchAsync(async (req, res, next) => {
+  // 1) Find all bookings
+  const bookings = await Booking.find({ user: req.user.id });
+  // 2) Find tours with the returned IDs
+
+  const tourIDs = bookings.map((el) => el.tour);
+  const tours = await Tour.find({ _id: { $in: tourIDs } });
+
+  res.status(200).render('overview', {
+    title: 'My Tours',
+    tours,
   });
 });

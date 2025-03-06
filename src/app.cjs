@@ -117,7 +117,7 @@ app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
 // add some headers properties for security
-app.use(helmet());
+app.use(helmet({ contentSecurityPolicy: false }));
 
 // parse req.body for access body data to the express server
 app.use(express.json({ limit: '10kb' }));
@@ -169,7 +169,7 @@ app.use(
 app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
-    "script-src 'self' https://unpkg.com https://cdnjs.cloudflare.com",
+    "script-src 'self' https://unpkg.com https://cdnjs.cloudflare.com https://js.stripe.com",
   );
   next();
 });
@@ -192,9 +192,9 @@ app.use('/', viewRouter);
 
 // api routes
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/bookings', bookingRouter);
-app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
 // not found route
 app.use('*', (req, res, next) => {
